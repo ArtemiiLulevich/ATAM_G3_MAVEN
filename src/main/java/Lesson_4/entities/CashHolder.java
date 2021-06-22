@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class CashHolder {
 
@@ -35,24 +36,72 @@ public class CashHolder {
                 ? this.cash.get(currency) : new ArrayList<>();
     }
 
-    public CashHolder putCashToCashHolder(Currency currency, Double sum){
+    public CashHolder putMoneyToCashHolder(Currency currency, Double sum){
 
-        int count = (int) (sum - (sum % 1));
+        int intSum = sum.intValue();
+        double doubleSum = sum % 1.00;
+
+        List<Double> range = new ArrayList<>();
+
+        for (int i = 0; i < intSum; i++){
+            range.add(1.00);
+        }
+
+        if (doubleSum != 0.0){
+            range.add(doubleSum);
+        }
         String name = currency.getName();
         List<Currency> temp = new ArrayList<>();
-
-        for(int i = 0; i < count + 1; i++){
+        for (Double nominal: range
+             ) {
             Currency tempCur = currency.clone();
-            if(i < count){
-                tempCur.setNominal(1.00);
-            } else {
-                tempCur.setNominal(sum % 1.00);
-            }
-
+            tempCur.setNominal(nominal);
             temp.add(tempCur);
         }
+//        int count = (int) (sum - (sum % 1));
+//        int count = 0;
+//        if (sum % 1.00 == 0){
+//            count = sum.intValue();
+//        } else {
+//            count = (int) (sum - (sum % 1)) + 1;
+//        }
+//        String name = currency.getName();
+//
+//
+//        for(int i = 0; i < count; i++){
+//
+//            if(i < count - 1){
+//                tempCur.setNominal(1.00);
+//            } else {
+//                tempCur.setNominal(sum % 1.00);
+//            }
+//
+//            temp.add(tempCur);
+//        }
         this.cash.put(name, temp);
+        return this;
+    }
 
+    public CashHolder putMoneyToCashHolder(String currencyName, List<Currency> money) {
+        this.cash.put(currencyName, money);
+        return this;
+    }
+
+    public CashHolder putMoneyToCashHolder(List<Currency> money) {
+        if (!money.isEmpty()){
+            money.stream()
+                    .map(Currency::getName)
+                    .distinct()
+                    .forEach(name -> {
+                        List<Currency> temp = money.stream()
+                                .filter(currency -> currency
+                                        .getName()
+                                        .equals(name))
+                                .collect(Collectors.toList());
+                        this.cash.put(name, temp);
+
+                    });
+        }
         return this;
     }
 
@@ -101,13 +150,11 @@ public class CashHolder {
     public String toString(){
         StringBuilder builder = new StringBuilder();
         builder.append("{\n\"Sum in holder\": \n");
-        this.cash.forEach((k, v) ->{
-            builder.append("\"").
-                    append(k).
-                    append(": ").
-                    append(v.size()).
-                    append(",\n");
-        });
+        this.cash.forEach((k, v) -> builder.append("\"").
+                append(k).
+                append(": ").
+                append(v.size()).
+                append(",\n"));
         builder.append("}");
         return builder.toString();
     }
