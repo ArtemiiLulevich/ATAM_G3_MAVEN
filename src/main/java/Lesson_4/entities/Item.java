@@ -1,6 +1,8 @@
 package Lesson_4.entities;
 
-public class Item {
+import static java.lang.String.format;
+
+public class Item{
 
     private String name;
     private double price;
@@ -28,6 +30,9 @@ public class Item {
         return this;
     }
 
-
+    @Override
+    public String toString() {
+        return format("{Name: %s, Price: %s}\n", this.name, this.price);
+    }
 
 }

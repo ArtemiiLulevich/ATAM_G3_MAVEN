@@ -1,18 +1,16 @@
 package Lesson_4.entities;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.util.List;
 
 public class Seller extends User{
-
-    private final Logger logger = LogManager.getLogger("Seller" + this.getName());
-
+    private CashHolder cashHolder;
 
     public Seller(String name, List<Item> items) {
         super(name);
         this.itemsForSale = items;
+        this.cashHolder = new CashHolder("Seller cashHolder" + name);
+        logger.debug("Seller {} created ", name);
+        logger.info("Seller {} can sale items {}", name, this.itemsForSale);
     }
 
     private List<Item> itemsForSale;
@@ -27,16 +25,23 @@ public class Seller extends User{
         return this;
     }
 
-    public Item sellItem(String name, List<Currency> currencies) {
-        double amount = 0.0;
+    @Override
+    public Seller setCashHolder(CashHolder cashHolder) {
+        this.cashHolder = cashHolder;
+        return this;
+    }
 
+
+    public Item saleItem(String itemName, List<Currency> currencies) {
+        double amount = 0.0;
+        logger.info("Get {}", curForSelling);
         for(Currency currency: currencies) {
            if(currency.getName().equals(curForSelling)) {
                amount+=currency.getNominal();
            }
         }
 
-        return saleItem(name, amount);
+        return saleItem(itemName, amount);
     }
 
     public Item saleItem(String name, Double amount) {
@@ -45,6 +50,7 @@ public class Seller extends User{
                 logger.info("Goods {} in", name);
                 if(item.getPrice() == amount){
                     logger.info("Sold!");
+                    this.cashHolder.putMoneyToCashHolder(new Currency(curForSelling), amount);
                     return item;
                 } else if (item.getPrice() < amount) {
                     logger.info("To much money to buy item. {}",
@@ -58,6 +64,11 @@ public class Seller extends User{
         }
         logger.info("I don't have this item.");
         return null;
+    }
+
+    public void showProfit() {
+        logger.info("Sum is {}",
+                this.cashHolder.getCashInCurrency(curForSelling).size());
     }
 
 }

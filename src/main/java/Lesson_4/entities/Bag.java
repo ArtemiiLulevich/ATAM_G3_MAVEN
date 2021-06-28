@@ -4,7 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Bag {
+public class Bag extends BaseEntity{
+
+    public Bag(String loggerName) {
+        super(loggerName);
+        logger.info("{} created", loggerName);
+    }
 
     private List<Item> items = new ArrayList<>();
 
@@ -22,6 +27,11 @@ public class Bag {
         return this;
     }
 
+    public Bag putItems(List<Item> items) {
+        this.items.addAll(items);
+        return this;
+    }
+
     public Item getItemByName(String name) {
         return this.items.stream()
                 .filter(item -> item.getName().equals(name))
@@ -33,6 +43,10 @@ public class Bag {
         return this.items.stream()
                 .filter(item -> item.getName().equals(name))
                 .collect(Collectors.toList());
+    }
+
+    public void showBagEntry() {
+        logger.info("{} in bag now.", this.items);
     }
 
 }

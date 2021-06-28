@@ -1,7 +1,8 @@
 package Lesson_4;
 
-import Lesson_4.entities.CashHolder;
 import Lesson_4.entities.Currency;
+import Lesson_4.entities.Item;
+import Lesson_4.entities.Seller;
 import Lesson_4.entities.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,36 +10,115 @@ import org.apache.logging.log4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
+import static Lesson_4.helper.FileHelper.readFile;
+import static java.lang.Double.parseDouble;
+
 public class MainClass {
 
-    private final static Logger LOGGER = LogManager.getLogger(MainClass.class);
+    private final static Logger LOGGER = LogManager.getLogger("Program");
 
 
     public static void main(String[] args) {
+        /*Scanner scanner = new Scanner(System.in);
 
-        User seller = new User("Vasili")
-                .setCashHolder(new CashHolder()
-                        .putMoneyToCashHolder(new Currency("UAH"), 25.5)
-                        .putMoneyToCashHolder(new Currency("USD"), 2.00)
-                        .putMoneyToCashHolder(new Currency("EUR"), 2.00));
-        User buyer = new User("Evgen")
-                .setCashHolder(new CashHolder());
+        List<Item> itemsForSale = new ArrayList<>();
 
+        LOGGER.info("Enter an item name");
+        String itemName = scanner.nextLine();
 
-        List<Currency> sumOfMoney = new ArrayList<>(){{
-           addAll(seller.getMoneyFromCashHolder("UAH", 15));
-           addAll(seller.getMoneyFromCashHolder("USD", 1));
-           addAll(seller.getMoneyFromCashHolder("EUR", 1));
-        }};
+        LOGGER.info("Enter item price");
+        double price = scanner.nextDouble();
 
 
-        buyer.putMoneyToCashHolder(sumOfMoney);
+
+        itemsForSale.add(new Item(itemName,price));
+
+        LOGGER.info("Enter seller name");
+        String sellerName = scanner.nextLine();
+
+        Seller seller = new Seller(sellerName, itemsForSale);
 
 
-        LOGGER.info(buyer.getMoneyFromCashHolder());
+        LOGGER.info("Enter buyer name");
+        String buyerName = scanner.nextLine();
+        User buyer = new User(buyerName);
 
-//        client.getMoneyFromCashHolder("EUR", 30.00)
-//                .forEach(currency -> System.out.println(currency.getNominal()));
+
+        LOGGER.info("Enter buyer currency");
+        String buyerCurrency = scanner.nextLine();
+
+        LOGGER.info("Enter buyer sum");
+        double buyerSum = scanner.nextDouble();
+
+        buyer.putMoneyToCashHolder(new Currency(buyerCurrency), buyerSum);
+
+        LOGGER.info("Enter item to buy name");
+        String itemForSelling = scanner.nextLine();
+
+        LOGGER.info("Enter sum to buy");
+        double sum = scanner.nextDouble();
+
+        LOGGER.info("Currency to buy");
+        String cur = scanner.nextLine();*/
+
+        List<String> data = readFile("C:\\Users\\artem\\IdeaProjects\\" +
+                "ATAM_G3_MAVEN\\src\\main\\resources\\data\\app-data.txt");
+
+        List<Item> itemsForSelling = new ArrayList<>();
+
+        itemsForSelling.add(new Item(
+                valueFromString(lineByName("Seller item", data)),
+                doubleValue("Item price", data)
+                )
+        );
+
+
+        Seller seller = new Seller(valueFromString(lineByName("Seller name", data)),
+                itemsForSelling);
+        User buyer = new User(valueFromString(lineByName("Buyer name", data)));
+
+        buyer.putMoneyToCashHolder(new Currency(valueFromString(lineByName("Buyer currency", data))),
+                doubleValue("Buyer money", data));
+
+
+        buyer.putItemInBag(
+                seller.saleItem(valueFromString(lineByName("Buyer buys", data)),
+                        buyer.getMoneyFromCashHolder(valueFromString(lineByName("Buyer currency", data)),
+                                doubleValue("Price", data))));
+
+        buyer.getBag().showBagEntry();
+
+//        scanner.close();
+//        LOGGER.info(buyer.getCountMoneyFromCashHolder());
+
     }
 
+    private static String valueFromString(String line) {
+        try {
+            return line.split(": ")[1];
+        } catch (ArrayIndexOutOfBoundsException e) {
+            LOGGER.error(e);
+            return line;
+        }
+    }
+
+
+    private static String lineByName(String name, List<String> lines) {
+        String result = lines.stream()
+                                .filter(line -> line.startsWith(name))
+                                .findFirst()
+                                .orElse("");
+
+        if (result.equals("")) {
+            LOGGER.error("In list where are no such line {}. Empty string returns.", name);
+        }
+        return result;
+    }
+
+    private static Double doubleValue (String name, List<String> lines) {
+        return parseDouble(
+                valueFromString(lineByName(name, lines).equals("")
+                ? " :  ": lineByName(name, lines)).equals(" ")
+                ? "0.00": valueFromString(lineByName(name, lines)));
+    }
 }

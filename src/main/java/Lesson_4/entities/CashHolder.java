@@ -1,18 +1,16 @@
 package Lesson_4.entities;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class CashHolder {
+public class CashHolder extends BaseEntity{
 
-    private final static Logger LOGGER = LogManager.getLogger("Robot");
-
+    public CashHolder(String loggerName) {
+        super(loggerName);
+    }
 
     private Map<String, List<Currency>> cash = new HashMap<>();
 
@@ -79,6 +77,7 @@ public class CashHolder {
 //            temp.add(tempCur);
 //        }
         this.cash.put(name, temp);
+        logger.info("Cash {}: {} available", currency.getName(), sum);
         return this;
     }
 
@@ -116,7 +115,7 @@ public class CashHolder {
             }
 
             if(currentSumOfCurrencyInCashHolder < sumOfMoney){
-                LOGGER.info("Available sum {} low than {}. Return all cash",
+                logger.info("Available sum {} low than {}. Return all cash",
                         currentSumOfCurrencyInCashHolder,
                         sumOfMoney);
                 return result;
@@ -137,7 +136,8 @@ public class CashHolder {
                      result) {
                     balance += rest.getNominal();
                 }
-                LOGGER.info("Requested sum returned. Balance: {}", balance);
+                logger.info("Requested sum {}: {} returned. Balance: {}",
+                        currencyName, sumOfMoney, balance);
                 return returnedCurrency;
             }
         } else {

@@ -1,0 +1,8 @@
+Seller item: Water, 1l
+Item price: 23.00
+Seller name: Alex
+Buyer name: Maria
+Buyer currency: UAH
+Buyer money: 50.0
+Buyer buys: Water, 1l
+Price: 23.00

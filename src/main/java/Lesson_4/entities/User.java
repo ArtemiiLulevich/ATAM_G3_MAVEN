@@ -2,14 +2,21 @@ package Lesson_4.entities;
 
 import java.util.List;
 
-public class User {
+
+// TODO: 24.06.2021 Need to add logger
+
+public class User extends BaseEntity{
 
     private String name;
     private CashHolder cashHolder;
     private Bag bag;
 
     public User(String name) {
+        super(name);
         this.name = name;
+        this.cashHolder = new CashHolder( name + " User cashHolder");
+        this.bag = new Bag(name + " User bag");
+        logger.debug("{} {} created",this.getClass().getName(), name);
     }
 
     public String getName() {
@@ -20,7 +27,6 @@ public class User {
         this.name = name;
         return this;
     }
-
 
     public User setCashHolder(CashHolder cashHolder) {
         this.cashHolder = cashHolder;
@@ -37,6 +43,8 @@ public class User {
     }
 
     public User putMoneyToCashHolder(Currency currency, Double sum){
+        logger.info("Put money {}: {} to {}",
+                currency.getName(), sum, this.cashHolder.getClass().getSimpleName());
         this.cashHolder.putMoneyToCashHolder(currency, sum);
         return this;
     }
@@ -52,16 +60,24 @@ public class User {
         return this;
     }
 
-
-
     public List<Currency> getMoneyFromCashHolder(String currency, double sum) {
+        logger.info("Out money {}: {}", currency, sum);
         return this.cashHolder.getMoneyFromCashHolder(currency, sum);
     }
 
-    public String getMoneyFromCashHolder() {
+    public String getCountMoneyFromCashHolder() {
         return this.cashHolder.toString();
     }
 
+    public User putItemInBag(Item item) {
+        this.bag.putItem(item);
+        return this;
+    }
 
+
+    public User putItemsInBag(List<Item> items) {
+        this.bag.putItems(items);
+        return this;
+    }
 
 }
