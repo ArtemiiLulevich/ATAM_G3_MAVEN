@@ -1,5 +1,6 @@
 package Lesson_4.entities;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -80,4 +81,45 @@ public class User extends BaseEntity{
         return this;
     }
 
+    public List<String> getCurrencies() {
+        return this.cashHolder.showCurrencies();
+    }
+
+    public User changeCurrencyAndSaveIt(String convertTo, List<Currency> cash, Bank bank) {
+        List<Currency> newCash = new ArrayList<>();
+
+        if (convertTo.equals("UAH")){
+            newCash = bank.changeToUah(cash);
+        } else {
+            newCash = bank.changeFromUah(convertTo, cash);
+        }
+
+        this.cashHolder.putMoneyToCashHolder(newCash);
+
+        return this;
+    }
+
+    public User changeCurrencyAndSaveIt(String convertTo, Bank bank) {
+        return changeCurrencyAndSaveIt(convertTo, this.cashHolder.getAllMoney(), bank);
+    }
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,9 +1,6 @@
 package Lesson_4;
 
-import Lesson_4.entities.Currency;
-import Lesson_4.entities.Item;
-import Lesson_4.entities.Seller;
-import Lesson_4.entities.User;
+import Lesson_4.entities.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -65,6 +62,8 @@ public class MainClass {
                 "ATAM_G3_MAVEN\\src\\main\\resources\\data\\app-data.txt");
 
         List<Item> itemsForSelling = new ArrayList<>();
+        Bank bank = new Bank(valueFromString(lineByName("Bank", data)));
+
 
         itemsForSelling.add(new Item(
                 valueFromString(lineByName("Seller item", data)),
@@ -80,11 +79,14 @@ public class MainClass {
         buyer.putMoneyToCashHolder(new Currency(valueFromString(lineByName("Buyer currency", data))),
                 doubleValue("Buyer money", data));
 
+        buyer.changeCurrencyAndSaveIt(valueFromString(lineByName("Buys in", data)), bank);
+
+
+        List<Currency> buyerMoney = buyer.getMoneyFromCashHolder("Buys in", doubleValue("Price", data));
+
 
         buyer.putItemInBag(
-                seller.saleItem(valueFromString(lineByName("Buyer buys", data)),
-                        buyer.getMoneyFromCashHolder(valueFromString(lineByName("Buyer currency", data)),
-                                doubleValue("Price", data))));
+                seller.saleItem(valueFromString(lineByName("Buyer buys", data)), buyerMoney));
 
         buyer.getBag().showBagEntry();
 

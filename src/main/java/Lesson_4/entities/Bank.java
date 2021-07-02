@@ -14,7 +14,7 @@ public class Bank extends BaseEntity{
     private final static String BASE_CURRENCY = "UAH";
 
     private final Map<String, Double[]> currencyCourse = new HashMap<>(){{
-        put("USD", new  Double[]{28.5, 27.5});
+        put("USD", new  Double[]{27.5, 28.5});
         put("EUR", new  Double[]{30.5, 31.5});
     }};
 
@@ -25,26 +25,106 @@ public class Bank extends BaseEntity{
             List<Currency> uahList = uahs.stream()
                     .filter(currency -> currency.getName().equals(BASE_CURRENCY))
                     .collect(Collectors.toList());
-
+            logger.info("There are {} of {} in list of cash." +
+                    "Converting to {}", uahList.size(), BASE_CURRENCY, reqCur);
 
             double course = currencyCourse.get(reqCur)[1];
 
-            int tempNominal = 0;
+            double sumOfUah = 0;
 
             for (Currency uah: uahList
                  ) {
-                tempNominal +=uah.getNominal();
-                if(tempNominal == course) {
-                    result.add(new Currency(reqCur).setNominal(1));
-                }
+                sumOfUah +=uah.getNominal();
+//                if(tempNominal == course) {
+//                    result.add(new Currency(reqCur).setNominal(1));
+//                }
             }
 
+            Double sumOfReqCur = sumOfUah / course;
+
+            Currency requestedCurrency = new Currency(reqCur);
+
+            int intSum = sumOfReqCur.intValue();
+            double doubleSum = sumOfReqCur % 1.00;
+
+            List<Double> range = new ArrayList<>();
+
+            for (int i = 0; i < intSum; i++){
+                range.add(1.00);
+            }
+
+            if (doubleSum != 0.0){
+                range.add(doubleSum);
+            }
+
+            for (Double nominal: range
+            ) {
+                Currency tempCur = requestedCurrency.clone();
+                tempCur.setNominal(nominal);
+                result.add(tempCur);
+            }
+
+            logger.info("Cash {}: {} available", requestedCurrency.getName(), sumOfReqCur);
         }
-
-
         return result;
     }
 
+    public List<Currency> changeToUah(List<Currency> currencies) {
+        List<Currency> result = new ArrayList<>();
 
+        List<Currency> filtered = currencies
+                .stream()
+                .filter(currency -> currencyCourse.containsKey(currency.getName()))
+                .collect(Collectors.toList());
+        double sum = 0.00;
+        if (!filtered.isEmpty()) {
+            currencyCourse.keySet()
+                    .forEach(convCurrency -> {
+                        List<Currency> temp = filtered.stream()
+                                .filter(currency -> currency.getName().equals(convCurrency))
+                                .collect(Collectors.toList());
+                        logger.info("There are {} of {} in list of cash." +
+                                "Converting {}", temp.size(), convCurrency, BASE_CURRENCY);
+                        double course = currencyCourse.get(convCurrency)[0];
+                        double sumOfNoUah = 0;
+
+                        for (Currency currency: temp
+                        ) {
+                            sumOfNoUah +=currency.getNominal();
+                        }
+
+                        Double sumOfReqCur = sumOfNoUah * course;
+
+                        Currency requestedCurrency = new Currency(BASE_CURRENCY);
+
+                        int intSum = sumOfReqCur.intValue();
+                        double doubleSum = sumOfReqCur % 1.00;
+
+                        List<Double> range = new ArrayList<>();
+
+                        for (int i = 0; i < intSum; i++){
+                            range.add(1.00);
+                        }
+
+                        if (doubleSum != 0.0){
+                            range.add(doubleSum);
+                        }
+
+                        for (Double nominal: range
+                        ) {
+                            Currency tempCur = requestedCurrency.clone();
+                            tempCur.setNominal(nominal);
+                            result.add(tempCur);
+                        }
+                    });
+
+
+            for (Currency uah: result) {
+                sum += uah.getNominal();
+            }
+        }
+        logger.info("Cash {}: {} available", BASE_CURRENCY, sum);
+        return result;
+    }
 }
 

@@ -1,9 +1,6 @@
 package Lesson_4.entities;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CashHolder extends BaseEntity{
@@ -13,6 +10,18 @@ public class CashHolder extends BaseEntity{
     }
 
     private Map<String, List<Currency>> cash = new HashMap<>();
+
+    public List<String> showCurrencies() {
+        return this.cash.keySet().stream().toList();
+    }
+
+    public List<Currency> getAllMoney() {
+        List<Currency> result = new ArrayList<>();
+
+        this.cash.forEach((key, val) -> result.addAll(val));
+
+        return result;
+    }
 
 
     public List<Currency> getCashInCurrency(String currency) {
@@ -56,26 +65,7 @@ public class CashHolder extends BaseEntity{
             tempCur.setNominal(nominal);
             temp.add(tempCur);
         }
-//        int count = (int) (sum - (sum % 1));
-//        int count = 0;
-//        if (sum % 1.00 == 0){
-//            count = sum.intValue();
-//        } else {
-//            count = (int) (sum - (sum % 1)) + 1;
-//        }
-//        String name = currency.getName();
-//
-//
-//        for(int i = 0; i < count; i++){
-//
-//            if(i < count - 1){
-//                tempCur.setNominal(1.00);
-//            } else {
-//                tempCur.setNominal(sum % 1.00);
-//            }
-//
-//            temp.add(tempCur);
-//        }
+
         this.cash.put(name, temp);
         logger.info("Cash {}: {} available", currency.getName(), sum);
         return this;
@@ -120,17 +110,38 @@ public class CashHolder extends BaseEntity{
                         sumOfMoney);
                 return result;
             } else {
+                int intSum = (int) sumOfMoney;
+                double doubleSum = sumOfMoney % 1.00;
+
+                List<Double> range = new ArrayList<>();
+
+                for (int i = 0; i < intSum; i++){
+                    range.add(1.00);
+                }
+
+                if (doubleSum != 0.0){
+                    range.add(doubleSum);
+                }
+
                 List<Currency> returnedCurrency = new ArrayList<>();
                 double returnedSum = 0;
-                for (Currency currency: result){
-                    if(returnedSum < sumOfMoney){
-                        returnedCurrency.add(currency);
-                        returnedSum += currency.getNominal();
+                for (int i = 0; i < range.size(); i++) {
+                    if (returnedSum < sumOfMoney) {
+                        Currency currency = result.get(i);
+                        Currency tempCur = currency.clone();
+                        tempCur.setNominal(range.get(i));
+                        returnedCurrency.add(tempCur);
+                        if (range.get(i) != 1) {
+                            currency.setNominal(currency.getNominal() - range.get(i));
+                        } else {
+                            result.remove(currency);
+                        }
+                        returnedSum += range.get(i);
                     } else {
                         break;
                     }
                 }
-                result.removeAll(returnedCurrency);
+
                 double balance = 0;
                 for (Currency rest:
                      result) {

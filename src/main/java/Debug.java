@@ -1,35 +1,25 @@
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
+import Lesson_4.entities.Bank;
+import Lesson_4.entities.Currency;
 
-import static Lesson_4.helper.FileHelper.readFile;
-import static Lesson_4.helper.FileHelper.writeToFile;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Debug {
 
-
-
     public static void main(String[] args) {
-        String filePath = "C:\\Users\\artem\\IdeaProjects\\" +
-                "ATAM_G3_MAVEN\\src\\main\\resources\\data\\app-data.txt";
-        File appData = new File(filePath);
+        Bank bank = new Bank("Bank");
 
-        try {
-            System.out.println(Files.readAllBytes(Paths.get(filePath)).length);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        List<Currency> currencies = new ArrayList<>();
+        currencies.add(new Currency("USD").setNominal(2.00));
+        currencies.add(new Currency("USD").setNominal(2.00));
+        currencies.add(new Currency("USD").setNominal(2.50));
+        currencies.add(new Currency("EUR").setNominal(2.0));
+        currencies.add(new Currency("EUR").setNominal(2.0));
+        currencies.add(new Currency("EUR").setNominal(2.0));
+        currencies.add(new Currency("EUR").setNominal(0.3));
 
-        List<String> lines =  readFile(filePath);
 
-        writeToFile(filePath,
-                lines.stream()
-                        .map(test -> test + ": " + new Date())
-                        .collect(Collectors.toList()));
+        System.out.println("Count of UAH: " + bank.changeFromUah("USD", bank.changeToUah(currencies)));
 
     }
 

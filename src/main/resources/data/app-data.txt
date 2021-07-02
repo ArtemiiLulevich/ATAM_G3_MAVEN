@@ -1,8 +1,10 @@
 Seller item: Water, 1l
-Item price: 23.00
+Item price: 27.5
 Seller name: Alex
 Buyer name: Maria
-Buyer currency: UAH
-Buyer money: 50.0
+Buyer currency: USD
+Buyer money: 200.0
 Buyer buys: Water, 1l
-Price: 23.00
+Buys in: UAH
+Price: 0.5
+Bank: NBU
