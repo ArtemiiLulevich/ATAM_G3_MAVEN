@@ -1,6 +1,5 @@
 package Lesson_4.entities;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -86,7 +85,7 @@ public class User extends BaseEntity{
     }
 
     public User changeCurrencyAndSaveIt(String convertTo, List<Currency> cash, Bank bank) {
-        List<Currency> newCash = new ArrayList<>();
+        List<Currency> newCash;
 
         if (convertTo.equals("UAH")){
             newCash = bank.changeToUah(cash);

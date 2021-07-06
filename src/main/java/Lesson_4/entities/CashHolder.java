@@ -1,6 +1,9 @@
 package Lesson_4.entities;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class CashHolder extends BaseEntity{
@@ -25,50 +28,8 @@ public class CashHolder extends BaseEntity{
 
 
     public List<Currency> getCashInCurrency(String currency) {
-/*        Map<Currency, Double> result = new HashMap<>();
-
-        for (String name: cash.keySet()){
-            if(name.equals(currency)){
-                result.putAll(cash.get(name));
-            }
-        }
-//        cash.entrySet()
-//                .stream()
-//                .filter(nameAndCurrencyMapping -> nameAndCurrencyMapping
-//                        .getKey()
-//                        .equals(currency))
-//                .collect(toMap);*/
-
         return this.cash.get(currency) != null
                 ? this.cash.get(currency) : new ArrayList<>();
-    }
-
-    public CashHolder putMoneyToCashHolder(Currency currency, Double sum){
-
-        int intSum = sum.intValue();
-        double doubleSum = sum % 1.00;
-
-        List<Double> range = new ArrayList<>();
-
-        for (int i = 0; i < intSum; i++){
-            range.add(1.00);
-        }
-
-        if (doubleSum != 0.0){
-            range.add(doubleSum);
-        }
-        String name = currency.getName();
-        List<Currency> temp = new ArrayList<>();
-        for (Double nominal: range
-             ) {
-            Currency tempCur = currency.clone();
-            tempCur.setNominal(nominal);
-            temp.add(tempCur);
-        }
-
-        this.cash.put(name, temp);
-        logger.info("Cash {}: {} available", currency.getName(), sum);
-        return this;
     }
 
     public CashHolder putMoneyToCashHolder(String currencyName, List<Currency> money) {
@@ -88,11 +49,33 @@ public class CashHolder extends BaseEntity{
                                         .equals(name))
                                 .collect(Collectors.toList());
                         this.cash.put(name, temp);
-
                     });
         }
         return this;
     }
+
+    public CashHolder putMoneyToCashHolder(Currency currency, Double sum){
+        int intSum = sum.intValue();
+        double doubleSum = sum % 1.00;
+        List<Double> range = new ArrayList<>();
+        for (int i = 0; i < intSum; i++){
+            range.add(1.00);
+        }
+        if (doubleSum != 0.0){
+            range.add(doubleSum);
+        }
+        String name = currency.getName();
+        List<Currency> temp = new ArrayList<>();
+        for (Double nominal: range) {
+            Currency tempCur = currency.clone();
+            tempCur.setNominal(nominal);
+            temp.add(tempCur);
+        }
+        this.cash.put(name, temp);
+        logger.info("Cash {}: {} available", currency.getName(), sum);
+        return this;
+    }
+
 
     public List<Currency> getMoneyFromCashHolder(String currencyName, double sumOfMoney){
         List<Currency> result = this.cash.get(currencyName);
@@ -112,17 +95,13 @@ public class CashHolder extends BaseEntity{
             } else {
                 int intSum = (int) sumOfMoney;
                 double doubleSum = sumOfMoney % 1.00;
-
                 List<Double> range = new ArrayList<>();
-
                 for (int i = 0; i < intSum; i++){
                     range.add(1.00);
                 }
-
                 if (doubleSum != 0.0){
                     range.add(doubleSum);
                 }
-
                 List<Currency> returnedCurrency = new ArrayList<>();
                 double returnedSum = 0;
                 for (int i = 0; i < range.size(); i++) {

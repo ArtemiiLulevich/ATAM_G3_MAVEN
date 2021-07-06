@@ -3,8 +3,8 @@ Item price: 27.5
 Seller name: Alex
 Buyer name: Maria
 Buyer currency: USD
-Buyer money: 200.0
 Buyer buys: Water, 1l
-Buys in: UAH
-Price: 0.5
+Buyer money: 200.0
+Buys in: USD
+Price: 27.5
 Bank: NBU

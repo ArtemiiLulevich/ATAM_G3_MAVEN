@@ -76,13 +76,14 @@ public class MainClass {
                 itemsForSelling);
         User buyer = new User(valueFromString(lineByName("Buyer name", data)));
 
-        buyer.putMoneyToCashHolder(new Currency(valueFromString(lineByName("Buyer currency", data))),
+        buyer.putMoneyToCashHolder(new Currency(
+                valueFromString(lineByName("Buyer currency", data))),
                 doubleValue("Buyer money", data));
 
-        buyer.changeCurrencyAndSaveIt(valueFromString(lineByName("Buys in", data)), bank);
+        buyer.changeCurrencyAndSaveIt("UAH", bank);
 
 
-        List<Currency> buyerMoney = buyer.getMoneyFromCashHolder("Buys in", doubleValue("Price", data));
+        List<Currency> buyerMoney = buyer.getMoneyFromCashHolder("UAH", doubleValue("Price", data));
 
 
         buyer.putItemInBag(
